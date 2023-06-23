@@ -1,4 +1,5 @@
-from hotel import Hotel
+from exception import CustomException
+from hotel import Hotel, logged
 from resort_hotel import ResortHotel
 from motel import Motel
 from typing import List, Optional
@@ -41,23 +42,28 @@ class HotelManager:
         """Finds and returns all the ResortHotels with a pool for adults."""
         return [hotel for hotel in self.hotels if isinstance(hotel, ResortHotel) and hotel.pool_for_adults]
 
+    @logged(CustomException, "file")
     def do_something_results(self) -> List:
-        """Returns a list of results from calling the 'do_something()' method on each hotel."""
-        return [hotel.get_location() for hotel in self.hotels]
+        """Returns a list of results from calling the 'get_location()' method on each hotel."""
+        return [hotel.get_location() for hotel in self.hotels if hotel.get_location() is not None]
+
+
 
     def concatenate_with_index(self) -> List[str]:
         """Returns a concatenation of each hotel's name with its index in the manager."""
         return enumerate(self.hotels)
 
+    @logged(CustomException, "file")
     def zip_with_do_something_results(self) -> List[tuple]:
-        """Returns a zip of each hotel's name and the result of calling 'do_something()' method on each hotel."""
-        return list(zip(self.hotels,
-                        self.do_something_results()))
+        """Returns a zip of each hotel's name and the result of calling 'get_location()' method on each hotel."""
+        raise CustomException
+        return list(zip(self.hotels, self.do_something_results()))
 
     def attribute_values_by_type(self, data_type) -> dict:
         """Returns a dictionary with attribute names and values of a specific data type for each hotel."""
         return {attr: value for hotel in self.hotels for attr, value in hotel.__dict__.items()
-                if isinstance(value, data_type)}
+                if type(value) == data_type}
+
 
     def check_condition_all_any(self, condition) -> dict:
         """Checks if all or any hotels satisfy the provided condition and returns a dictionary of the results."""
@@ -85,7 +91,7 @@ if __name__ == '__main__':
     hotel_manager.display_hotels(hotels_with_pools)
 
     do_something_results = hotel_manager.do_something_results()
-    print("Results of 'do_something()' method:")
+    print("Results of 'get_location()' method:")
     print(do_something_results)
 
     concatenated_hotels = hotel_manager.concatenate_with_index()
@@ -93,7 +99,7 @@ if __name__ == '__main__':
     print(list(concatenated_hotels))
 
     zip_results = hotel_manager.zip_with_do_something_results()
-    print("Zipped results of 'do_something()' method with hotel names:")
+    print("Zipped results of 'get_location()' method with hotel names:")
     print(zip_results)
 
     attribute_values_int = hotel_manager.attribute_values_by_type(int)

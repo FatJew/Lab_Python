@@ -8,4 +8,3 @@ class Hotel(ABC):
     def get_location(self) -> str:
         """Abstract method for getting the location of the hotel."""
         pass
-      
